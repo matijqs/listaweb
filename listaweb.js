@@ -56,7 +56,7 @@ function cargarArchivo(medidaBuscada) {
                         Medida: ${medida}<br>
                         Marca: ${marca}<br>
                         Modelo: ${modelo}<br>
-                        Precio Web: $${precioWebFormateado}`;
+                        Precio unitario: $${precioWebFormateado}`;
 
                     const resultadoElemento = document.createElement('div');
                     resultadoElemento.classList.add('alert', 'alert-info');
