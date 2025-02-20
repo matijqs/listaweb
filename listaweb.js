@@ -43,7 +43,7 @@ function cargarArchivo(medidaBuscada) {
                     const medida = fila["MEDIDA"] || '';
                     const marca = fila["MARCA"] || '';
                     const modelo = fila["MODELO"] || '';
-                    const precioWeb = fila["PRECIOWEB"] || '';
+                    const precioWeb = fila["WEB"] || '';
 
                     function formatearPrecio(precio) {
                         if (!precio) return '';
