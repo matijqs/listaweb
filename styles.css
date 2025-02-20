@@ -70,22 +70,34 @@ h1 {
 }
     
 .btn-primary,
-.btn-success {
+.btn-success,
+#copySelectedButton {
     background-color: #ff0000;
     border-color: #ff0000;
+    width: 100%; /* Asegura que el botón ocupe todo el ancho */
 }
 
 .btn-primary:hover,
-.btn-success:hover {
+.btn-success:hover,
+#copySelectedButton:hover {
     background-color: #cc0000;
     border-color: #cc0000;
 }
 
-#copyButton:focus, #copyButton:active {
+#copyButton:focus, 
+#copyButton:active,
+#copySelectedButton:focus,
+#copySelectedButton:active {
     background-color: #ff0000;
     border-color: #ff0000;
     outline: none;
 }
+
+.btn {
+    height: 50px; /* Ajusta la altura para todos los botones */
+    font-size: 16px; /* Ajusta el tamaño de fuente */
+}
+
 
 .alert {
     border-radius: 8px;
@@ -134,4 +146,10 @@ a {
 a:hover {
     right: 10px;
     color: #ff0000;
+}
+
+#copySelectedButton,#copySelectedButton:active{
+    background-color: #ff0000;
+    border-color: #ff0000;
+    outline: none;
 }

@@ -8,6 +8,8 @@ document.getElementById('medidaInput').addEventListener('keydown', function(even
 function realizarBusqueda() {
     const medidaBuscada = document.getElementById('medidaInput').value.trim();
 
+    console.log('Buscando medida:', medidaBuscada); // Log para verificar la entrada
+
     if (!medidaBuscada) {
         alert("Por favor, ingresa una medida válida.");
         return;
@@ -18,20 +20,30 @@ function realizarBusqueda() {
 
 function cargarArchivo(medidaBuscada) {
     fetch('LISTA DE PRECIOS WEB.xlsx')
-        .then(response => response.arrayBuffer())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.arrayBuffer();
+        })
         .then(data => {
             const workbook = XLSX.read(data, { type: 'array' });
             const worksheet = workbook.Sheets["Hoja1"];
             const jsonData = XLSX.utils.sheet_to_json(worksheet);
 
+            console.log('Datos JSON:', jsonData); // Log para verificar los datos
+
             const variantes = GenerarVariantesMedida(medidaBuscada);
+            console.log('Variantes generadas:', variantes); // Log para verificar variantes
 
             const resultados = jsonData.filter(row =>
                 variantes.some(vari => row["MEDIDA"] && row["MEDIDA"].toString().toUpperCase().includes(vari.toUpperCase()))
             );
 
+            console.log('Resultados encontrados:', resultados); // Log para verificar los resultados
+
             const resultadosDiv = document.getElementById('resultados');
-            resultadosDiv.innerHTML = '';
+            resultadosDiv.innerHTML = ''; // Limpiar resultados anteriores
 
             const encabezado = document.createElement('h3');
             encabezado.textContent = "Tenemos lo siguiente:";
@@ -53,6 +65,7 @@ function cargarArchivo(medidaBuscada) {
                     const precioWebFormateado = formatearPrecio(precioWeb);
 
                     let resultadoTexto = `
+                        <input type="checkbox" class="resultado-checkbox">
                         Medida: ${medida}<br>
                         Marca: ${marca}<br>
                         Modelo: ${modelo}<br>
@@ -65,6 +78,7 @@ function cargarArchivo(medidaBuscada) {
                 });
 
                 document.getElementById('copyButton').style.display = 'block';
+                document.getElementById('copySelectedButton').style.display = 'block'; // Mostrar el botón de copiar seleccionados
             } else {
                 const resultadoElemento = document.createElement('p');
                 resultadoElemento.classList.add('alert', 'alert-warning');
@@ -72,6 +86,7 @@ function cargarArchivo(medidaBuscada) {
                 resultadosDiv.appendChild(resultadoElemento);
 
                 document.getElementById('copyButton').style.display = 'none';
+                document.getElementById('copySelectedButton').style.display = 'none'; // Ocultar el botón de copiar seleccionados
             }
         })
         .catch(error => console.error('Error al cargar el archivo:', error));
@@ -131,6 +146,34 @@ document.getElementById('copyButton').addEventListener('click', function() {
     }
 
     resultadosTexto = resultadosTexto.trim();
+    navigator.clipboard.writeText(resultadosTexto);
+});
 
+document.getElementById('copySelectedButton').addEventListener('click', function() {
+    const resultadosDiv = document.getElementById('resultados');
+    let resultadosTexto = '';
+
+    // Añadir el texto del encabezado
+    const encabezado = resultadosDiv.querySelector('h3');
+    if (encabezado) {
+        resultadosTexto += encabezado.innerText + '\n\n';
+    }
+
+    const checkboxes = resultadosDiv.querySelectorAll('.resultado-checkbox:checked');
+
+    if (checkboxes.length === 0) {
+        alert("Selecciona al menos un resultado para copiar.");
+        return;
+    }
+
+    checkboxes.forEach(checkbox => {
+        const resultadoElemento = checkbox.closest('.alert');
+        if (resultadoElemento) {
+            const lines = resultadoElemento.innerText.split('\n').map(line => line.trim()).filter(line => line !== '');
+            resultadosTexto += lines.join('\n') + '\n\n';
+        }
+    });
+
+    resultadosTexto = resultadosTexto.trim();
     navigator.clipboard.writeText(resultadosTexto);
 });
